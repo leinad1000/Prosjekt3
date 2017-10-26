@@ -15,6 +15,11 @@ System::System(int n, double T)
 {
     m_nTimeSteps = n;
     m_T = T;
+    m_days = 365.242199*m_T;
+    m_rounds = m_days/m_orbital_period_mercury;
+    m_data_points_per_round = ((double) m_nTimeSteps)/m_rounds;
+    m_i_one_round = (int) m_data_points_per_round;
+
 }
 void System::computeForces() {
     resetAllForces();
@@ -61,46 +66,11 @@ void System::integrate(int numberOfSteps) {
     computeForces();
     printIntegrateInfo(0);
 
-    double pi = M_PI;
-    double theta_p, x_p, y_p;
-    double avstand = 1.0;
-    int revolutions = 1;
-    double orbital_period_mercury = 87.969257;
-    double days = 365.242199*m_T;
-    double rounds = days/orbital_period_mercury;
-    double data_points_per_round = ((double) m_nTimeSteps)/rounds;
-    int i_one_round = (int) data_points_per_round;
-
     for (int i=1; i<numberOfSteps+1; i++) {
         m_integrator->integrateOneStep(m_particles);
         printIntegrateInfo(i);
 
-        // Perihelion precession of Mercury
-
-        Particle* sun = m_particles.at(0);
-        Particle* mercury = m_particles.at(1);
-        vec3 relative_position = mercury->getPosition() - sun->getPosition();
-
-        if (relative_position.length() < avstand){
-            avstand = relative_position.length();
-            x_p = relative_position[0];
-            y_p = relative_position[1];
-        }
-
-        if (i == i_one_round*revolutions) {
-            theta_p = atan2(y_p,x_p);
-            theta_p = fabs((theta_p/pi)*180); // Converting to degrees
-            if (m_outFileOpen2 == false) {
-                m_outFile2.open("../Project3/theta", std::ios::out);
-                m_outFileOpen2 = true;
-            }
-            m_outFile2 << setw(15) << setprecision(8) << theta_p << endl;
-
-            avstand = 1.0;
-            revolutions = revolutions + 1;
-        }
-
-        // End Perihelion precession of Mercury
+        perihelion(i); // Only use this when the perihelion precession of Mercury is to be found. Otherwise comment out
 
         writePositionsToFile();
     }
@@ -196,4 +166,32 @@ void System::closeOutFile() {
         m_outFile2.close();
         m_outFileOpen2 = false;
     }
+}
+
+void System::perihelion(int stepNumber) {
+
+    Particle* sun = m_particles.at(0);
+    Particle* mercury = m_particles.at(1);
+    vec3 relative_position = mercury->getPosition() - sun->getPosition();
+
+    if (relative_position.length() < m_avstand){
+        m_avstand = relative_position.length();
+        m_x_p = relative_position[0];
+        m_y_p = relative_position[1];
+    }
+
+    if (stepNumber == m_i_one_round*m_revolutions) {
+        m_theta_p = atan2(m_y_p,m_x_p);
+        m_theta_p = fabs((m_theta_p/m_pi)*180); // Converting to degrees
+        if (m_outFileOpen2 == false) {
+            m_outFile2.open("../Project3/theta", std::ios::out);
+            m_outFileOpen2 = true;
+        }
+        m_outFile2 << setw(15) << setprecision(8) << m_theta_p << endl;
+
+        m_avstand = 1.0;
+        m_revolutions += 1;
+    }
+
+
 }

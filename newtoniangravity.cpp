@@ -23,6 +23,7 @@ void NewtonianGravity::computeForces(Particle& a, Particle& b) {
     //Changing the gravitational law for the perihelion precession of Mercury
     l = ( relative_position.cross(b.getVelocity()) ).length();
     c = ((3*365.2522*24*3600)/1.496)*(1e-3);
+    // Comment out the line below when relativistic correction is not needed
     F *= (1 + (3*l*l)/(relative_position.lengthSquared()*c*c));
 
     phi = atan((relative_position[2])/relative_position.lengthProjected());

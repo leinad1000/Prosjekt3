@@ -5,6 +5,7 @@
 #include "particle.h"
 #include <vector>
 #include <fstream>
+#include <cmath>
 
 class System {
 private:
@@ -14,6 +15,17 @@ private:
     int                         m_integrateSteps    = 0;
     int                         m_nTimeSteps        = 0;
     int                         m_numberOfParticles = 0;
+    int                         m_revolutions       = 1;
+    int                         m_i_one_round       = 0;
+    double                      m_avstand           = 1.0;
+    double                      m_orbital_period_mercury = 87.969257;
+    double                      m_days              = 0;
+    double                      m_rounds            = 0;
+    double                      m_data_points_per_round = 0;
+    double                      m_theta_p           = 0;
+    double                      m_x_p               = 0;
+    double                      m_y_p               = 0;
+    double                      m_pi                = M_PI;
     double                      m_T                 = 0;
     double                      m_momentum          = 0;
     double                      m_kineticEnergy     = 0;
@@ -42,6 +54,7 @@ public:
     void setFileWriting         (bool writeToFile);
     void writePositionsToFile   ();
     void closeOutFile           ();
+    void perihelion             (int stepNumber);
     double computeKineticEnergy ();
     double computeMomentum      ();
 };
