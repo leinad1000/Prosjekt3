@@ -174,12 +174,14 @@ void System::perihelion(int stepNumber) {
     Particle* mercury = m_particles.at(1);
     vec3 relative_position = mercury->getPosition() - sun->getPosition();
 
+    // Finding the position of perihelion for present orbit
     if (relative_position.length() < m_avstand){
         m_avstand = relative_position.length();
         m_x_p = relative_position[0];
         m_y_p = relative_position[1];
     }
 
+    // Calculating perihelion for present orbit
     if (stepNumber == m_i_one_round*m_revolutions) {
         m_theta_p = atan2(m_y_p,m_x_p);
         m_theta_p = fabs((m_theta_p/m_pi)*180); // Converting to degrees
