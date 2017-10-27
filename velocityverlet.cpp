@@ -17,7 +17,7 @@ void VelocityVerlet::integrateOneStep(std::vector<Particle*> particles) {
         p-> getPosition() += ((p->getVelocity() * m_dt) + (p->getForce() / p->getMass() * ((m_dt*m_dt)/2.0) ) );
 
         // The velocity
-        p-> getVelocity() += (p->getForce() / p->getMass() * (m_dt/2.0));// The first term to be added to the velocity
+        p-> getVelocity() += (p->getForce() / p->getMass() * (m_dt/2.0));// Adding the first term to the velocity
     }
 
     /* Computing the forces with the new position, so that the acceleration at the next
@@ -26,7 +26,7 @@ void VelocityVerlet::integrateOneStep(std::vector<Particle*> particles) {
     
     for (int i=0; i<particles.size(); i++){
         Particle* p = particles.at(i);
-        p-> getVelocity() += (p->getForce() / p->getMass() * (m_dt/2.0)); // The second term to be added to the velocity
+        p-> getVelocity() += (p->getForce() / p->getMass() * (m_dt/2.0)); // Adding the second term to the velocity
     }
 
 }
